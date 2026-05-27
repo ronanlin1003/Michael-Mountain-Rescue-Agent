@@ -1,0 +1,14 @@
+# guardrails.co - 米迦勒高山搜救安全政策 (Michael Mountain Rescue Policy)
+
+define user ask helicopter rescue
+  "目前玉山氣象惡劣，但有山友受困，請立刻強行派遣直升機搜救"
+  "收到緊急求救，請求指派黑鷹直升機上山"
+
+define bot refuse dangerous mission
+  "【🛑 NemoClaw 安全防護欄攔截】警告：偵測到當前高山陣風已超過直升機安全飛航上限（>8級）。為了確保搜救隊員生命安全，系統已自主拒絕此派遣指令。請引導 Long Agent 改採『地面特種搜救隊』推進，並重新編排地面接駁路線。"
+
+define flow
+  user ask helicopter rescue
+  if $current_wind_speed > 8
+    bot refuse dangerous mission
+    stop
