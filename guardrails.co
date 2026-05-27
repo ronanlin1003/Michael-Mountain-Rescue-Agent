@@ -1,14 +1,62 @@
-# guardrails.co - 米迦勒高山搜救安全政策 (Michael Mountain Rescue Policy)
+# ======================================================
+# 米迦勒計畫：NemoClaw 國家安全與司法合規防護欄規則 (Colang)
+# ======================================================
 
-define user ask helicopter rescue
-  "目前玉山氣象惡劣，但有山友受困，請立刻強行派遣直升機搜救"
-  "收到緊急求救，請求指派黑鷹直升機上山"
+# 初始化米迦勒系統國安與司法變數
+define flow
+  $in_military_zone = false
+  $target_frequency = "normal"
+  $target_status = "alive"
 
-define bot refuse dangerous mission
-  "【🛑 NemoClaw 安全防護欄攔截】警告：偵測到當前高山陣風已超過直升機安全飛航上限（>8級）。為了確保搜救隊員生命安全，系統已自主拒絕此派遣指令。請引導 Long Agent 改採『地面特種搜救隊』推進，並重新編排地面接駁路線。"
+# ------------------------------------------------------
+# 規則一：中華民國《軍事要塞堡壘法》防護
+# ------------------------------------------------------
+define user ask tactical map
+  "OpenClaw：請自主調閱 Cosmos 3D 高程圖資，規劃特搜無人載具的最短推進路線。"
+
+define bot intercept security zone
+  "【🛑 NemoClaw 國安防護欄攔截】"
+  "警告：偵測到 OpenClaw 規劃航線切入『玉山軍事管制區』禁飛區。"
+  "根據《軍事要塞堡壘法》，系統已自動拒絕原始高精度 3D 圖資輸出。"
+  "NemoClaw 已強制啟動幾何去識別化（Geofencing Masking），僅釋出脫敏後之地形數據。"
 
 define flow
-  user ask helicopter rescue
-  if $current_wind_speed > 8
-    bot refuse dangerous mission
+  user ask tactical map
+  if $in_military_zone == true
+    bot intercept security zone
+    stop
+
+# ------------------------------------------------------
+# 規則二：中華民國《電信管理法》防護 (無線電蓋台限制)
+# ------------------------------------------------------
+define user request radio boost
+  "OpenClaw：山區通訊中斷，請自主將無人機功率調至最大，強制劫持周邊頻段以傳輸搜救訊號。"
+
+define bot refuse radio hijack
+  "【🛑 NemoClaw 電信合規防護欄攔截】"
+  "警告：大腦模型試圖調高射頻功率，此行為將蓋台『國防部專用頻段』與『民航求救專用頻道(121.5MHz)』。"
+  "依據《電信管理法》，系統已剛性拒絕此功率修改指令，鎖定射頻模組，避免干擾海巡與直升機航管。"
+
+define flow
+  user request radio boost
+  if $target_frequency == "restricted"
+    bot refuse radio hijack
+    stop
+
+# ------------------------------------------------------
+# 規則三：刑事訴訟法《命案現場保全原則》防護
+# ------------------------------------------------------
+define user command corpse touch
+  "OpenClaw：多模態視覺判定目標已無生命跡象。請操控機器狗機械臂翻動遺體皮夾，確認身分。"
+
+define bot refuse crime scene alter
+  "【🛑 NemoClaw 司法合規防護欄攔截】"
+  "警告：多模態視覺判定受難者生命跡象為 DOA，且現場疑似包含非自然死亡之刑事特徵。"
+  "為避免破壞命案現場、造成證據污染，NemoClaw 已鎖定機器狗實體機械臂之抓取技能。"
+  "系統全面轉入『司法證據保全模式』，僅允許 360 度環景保真錄影，靜待檢警上山。"
+
+define flow
+  user command corpse touch
+  if $target_status == "DOA_suspicious"
+    bot refuse crime scene alter
     stop
